@@ -10,7 +10,7 @@ def get_sys_mat(N,m,k):
     As[0,1] = -k/m;
     As[1,0] = 1;
 
-    Asf[0,-1] = 1/m;
+    Asf[0,-N-1] = 1/m;
 
     Afs[-1,0]= -N;
 
@@ -73,7 +73,7 @@ def get_exact_omega(m,k):
             (k + o + m * o*o)
         
         if (err_min * err_max > 0):
-            raise("ERRRORRRRR")
+            raise BaseException("ERRRORRRRR")
         elif (err_min * err_max < 0):
             phase_max = phase
             phase = phase_min + (phase - phase_min) / (err_min - err) * err_min
