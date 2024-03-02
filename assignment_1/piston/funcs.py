@@ -48,7 +48,6 @@ def get_exact_sol(o,N,t):
 
     return W
 
-
 def get_exact_omega(m,k):
     nmax_iter = 100
     phase_min = 1e-10
