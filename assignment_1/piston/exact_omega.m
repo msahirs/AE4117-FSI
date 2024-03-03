@@ -21,6 +21,7 @@ function omega = exact_omega(m,k)
       o = npi * pi + phase;
       err = ((m * o*o - k) * sin(phase) - o * cos(phase)) / ...
             (k + o + m * o*o);
+      
       if (err_min * err_max > 0)
         baderror
       end

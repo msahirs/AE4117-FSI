@@ -1,6 +1,5 @@
 import numpy as np
 
-
 def get_sys_mat(N,m,k):
     As = np.zeros((2,2))
     Asf = np.zeros((2,2*N))
@@ -30,59 +29,74 @@ def get_sys_mat(N,m,k):
     return As, Asf, Afs, Af
 
 def get_exact_initsol(o,N,t):
+
+    if isinstance(t,(float,int)):
+        t = np.array([t])
+
+    elif isinstance(t,(list)):
+        t = np.array(t)
+
     W_s = np.array([-o*np.sin(o*t), np.cos(o*t) ])
     W_f = np.zeros((2*N,1));
+
     x = np.arange(0.5/N,1/N,(1-0.5/N))
+
     W_f[:N] = - o/np.sin(o) * np.cos(o*x[:,np.newaxis]) * np.cos(o*t)
     W_f[N:2*N] = - o/np.sin(o) * np.sin(o*x[:,np.newaxis]) * np.sin(o*t)
 
     return W_f, W_s
 
 def get_exact_sol(o,N,t):
+    
+    if isinstance(t,(float,int)):
+        t = np.array([t])
+
+    elif isinstance(t,(list)):
+        t = np.array(t)
+
+    
     x = np.arange(0.5/N,1/N,(1-0.5/N))
+
     W = np.zeros((2*N+2,len(t)));
     W[:2,:]       = np.array([ -o*np.sin(o*t),
                         np.cos(o*t) ])
     W[2:N+2,:]= - o / np.sin(o) * np.cos(o*x[:,np.newaxis]) * np.cos(o*t)
     W[N+1:2*N+2,:] = - o / np.sin(o) * np.sin(o*x[:,np.newaxis]) * np.sin(o*t)
-
+    
     return W
 
-def get_exact_omega(m,k):
-    nmax_iter = 100
+def get_exact_omega(m,k, nmax_iter = 100):
+    
     phase_min = 1e-10
     phase_max = np.pi
-    npi       = 0
-    phase     = 0.5 * np.pi
-    o_old     = -1
-    o         =  1
+    npi = 0
+    phase = 0.5 * np.pi
+
+    o_old = -1
+    o = 1
 
     i = 0
-
-    while not((o == o_old) or (i > nmax_iter)):
-        
+    while not ((o == o_old) or (i > nmax_iter)):
         o_old = o
-        i+=1
+        i = i + 1
         o = npi * np.pi + phase_min
-        err_min = ((m * o**2 - k) * np.sin(phase_min) - o * np.cos(phase_min)) / \
-                (k + o + m * o*o)
+        err_min = ((m * o * o - k) * np.sin(phase_min) - o * np.cos(phase_min)) / (k + o + m * o * o)
         o = npi * np.pi + phase_max
-        err_max = ((m * o**2 - k) * np.sin(phase_max) - o * np.cos(phase_max)) / \
-                (k + o + m * o*o)
+        err_max = ((m * o * o - k) * np.sin(phase_max) - o * np.cos(phase_max)) / (k + o + m * o * o)
         o = npi * np.pi + phase
-        err = ((m * o*o - k) * np.sin(phase) - o * np.cos(phase)) / \
-            (k + o + m * o*o)
-        print(err_min * err_max)
-        if (err_min * err_max > 0):
-            raise BaseException("ERRRORRRRR")
-        elif (err_min * err_max < 0):
+        err = ((m * o * o - k) * np.sin(phase) - o * np.cos(phase)) / (k + o + m * o * o)
+
+        if err_min * err_max > 0:
+            raise ValueError('baderror')
+        
+        if err * err_min < 0:
             phase_max = phase
             phase = phase_min + (phase - phase_min) / (err_min - err) * err_min
         else:
-            phase_min = phase;
+            phase_min = phase
             phase = phase + (phase_max - phase) / (err - err_max) * err
 
-    if ( o_old != o ):
+    if o_old != o:
         print('Could not find correct mode...')
 
     return o

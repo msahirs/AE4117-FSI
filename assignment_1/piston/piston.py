@@ -2,11 +2,12 @@ import numpy as np
 import funcs
 
 # Number of cells in flow domain
-N = 64
+N = 10
 
 # Structural mass and stiffness
 m = 1
-k = 1
+k = 2
+
 
 # Time step size and number of time steps
 dt    = 0.1
@@ -27,7 +28,9 @@ As, Asf, Afs, Af = funcs.get_sys_mat(N,m,k)
 # Initial condition: piston displaced unit 1
 #                    based on exact solution
 omega = funcs.get_exact_omega(m,k)
+print(omega)
 W0    = funcs.get_exact_sol(omega,N,0)
+
 
 # Energy matrix: Energy = W' * E * W
 E       = 0.5 * np.eye(2*N+2) / N
@@ -46,28 +49,29 @@ M_mono = np.linalg.inv(L_mono)*R_mono
 ###############################################
 ## FILL IN THE PARTITIONG SCHEMES BELOW      ##
 ###############################################
+# print(np.block([[As, 0], [Afs, Af]]))
 # Partitioned sequential Structure-Fluid
 W_seqsf = np.copy(W0)
-L_seqsf = np.eye(2*N+2) - dt * theta* np.block([[As, 0],
+L_seqsf = np.eye(2*N+2) - dt * theta* np.block([[As, np.zeros((2,2*N))],
                                                     [Afs, Af]])
-R_seqsf = np.eye(2*N+2) - dt * theta     * np.block([[0, Asf], 
-                                                    [0, 0]])
+R_seqsf = np.eye(2*N+2) + dt * (1-theta)     * np.block([[np.zeros((2,2)), Asf], 
+                                                    [np.zeros((2*N,2)), np.zeros((2*N,2*N))]])
 M_seqsf = np.linalg.inv(L_seqsf) @ R_seqsf
 
 # Partitioned sequential Fluid-Structure
 W_seqfs = np.copy(W0)
 L_seqfs = np.eye(2*N+2) - dt * theta     * np.block([[As, Asf], 
-                                                    [0, Af]])
-R_seqfs = np.eye(2*N+2) - dt * theta     * np.block([[0, 0], 
-                                                    [Afs, 0]])
+                                                    [np.zeros((2*N,2)), Af]])
+R_seqfs = np.eye(2*N+2) + dt * (1-theta)     * np.block([[np.zeros((2,2)), np.zeros((2,2*N))], 
+                                                    [Afs, np.zeros((2*N,2*N))]])
 M_seqfs = np.linalg.inv(L_seqfs) @ R_seqfs
 
 # Partitioned parallel
 W_par = np.copy(W0)
-L_par = np.eye(2*N+2) - dt * theta     * np.block([[As, 0], 
-                                                    [0, Af]])
-R_par = np.eye(2*N+2) - dt * theta     * np.block([[0, Asf], 
-                                                    [Afs, 0]])
+L_par = np.eye(2*N+2) - dt * theta     * np.block([[As, np.zeros((2,2*N))], 
+                                                    [np.zeros((2*N,2)), Af]])
+R_par = np.eye(2*N+2) + dt * (1-theta)     * np.block([[np.zeros((2,2)), Asf], 
+                                                    [Afs, np.zeros((2*N,2*N))]])
 M_par = np.linalg.inv(L_par) @ R_par
 ###############################################
 
@@ -77,6 +81,9 @@ qvec = np.ones((5,1))*W0[1]
 pvec = np.ones((5,1))*W0[N+1]
 evec = np.zeros((5,1))
 
+# print(funcs.get_exact_sol(omega,N,0))
+
+
 # Actual integration
 for i in range(Ndt):
     t       = i*dt
@@ -85,23 +92,30 @@ for i in range(Ndt):
     W_seqsf = M_seqsf * W_seqsf
     W_seqfs = M_seqfs * W_seqfs
     W_par   = M_par   * W_par
-    
-    uvec[:,i+1] = np.array([W_exact[0],
+
+    print(W_mono)
+    # print(np.array([W_exact[0],
+    #                W_mono[0] ,
+    #                W_seqsf[0] ,
+    #                W_seqfs[0] ,
+    #                W_par[0]  ]))
+
+    uvec[:,i] = np.array([W_exact[0],
                    W_mono[0] ,
                    W_seqsf[0] ,
                    W_seqfs[0] ,
                    W_par[0]  ])
-    qvec[:,i+1] = np.array([W_exact[1],
+    qvec[:,i] = np.array([W_exact[1],
                    W_mono[1] ,
                    W_seqsf[1] ,
                    W_seqfs[1] ,
-                   W_par[1]  ])
-    pvec[:,i+1] = np.array([W_exact[N+1],
+                   W_par[1]  ])[:,np.newaxis]
+    pvec[:,i] = np.array([W_exact[N+1],
                    W_mono[N+1] ,
                    W_seqsf[N+1] ,
                    W_seqfs[N+1] ,
-                   W_par[N+1]  ])
-    evec[:,i+1] = np.array([0,
+                   W_par[N+1]  ])[:,np.newaxis]
+    evec[:,i] = np.array([0,
                    W_mono[:,np.newaxis]  * E * W_mono  / E0 - 1,
                    W_seqsf[:,np.newaxis] * E * W_seqsf / E0 - 1,
                    W_seqfs[:,np.newaxis] * E * W_seqfs / E0 - 1,
