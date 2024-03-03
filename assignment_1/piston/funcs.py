@@ -60,17 +60,19 @@ def get_exact_omega(m,k):
     i = 0
 
     while not((o == o_old) or (i > nmax_iter)):
+        
         o_old = o
         i+=1
         o = npi * np.pi + phase_min
-        err_min = ((m * o*o - k) * np.sin(phase_min) - o * np.cos(phase_min)) \
+        err_min = ((m * o**2 - k) * np.sin(phase_min) - o * np.cos(phase_min)) / \
                 (k + o + m * o*o)
-        err_max = ((m * o*o - k) * np.sin(phase_max) - o * np.cos(phase_max)) \
+        o = npi * np.pi + phase_max
+        err_max = ((m * o**2 - k) * np.sin(phase_max) - o * np.cos(phase_max)) / \
                 (k + o + m * o*o)
         o = npi * np.pi + phase
-        err = ((m * o*o - k) * np.sin(phase) - o * np.cos(phase)) \
+        err = ((m * o*o - k) * np.sin(phase) - o * np.cos(phase)) / \
             (k + o + m * o*o)
-        
+        print(err_min * err_max)
         if (err_min * err_max > 0):
             raise BaseException("ERRRORRRRR")
         elif (err_min * err_max < 0):

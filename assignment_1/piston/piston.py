@@ -5,7 +5,7 @@ import funcs
 N = 64
 
 # Structural mass and stiffness
-m = 2
+m = 1
 k = 1
 
 # Time step size and number of time steps
@@ -48,23 +48,27 @@ M_mono = np.linalg.inv(L_mono)*R_mono
 ###############################################
 # Partitioned sequential Structure-Fluid
 W_seqsf = np.copy(W0)
-L_seqsf = np.eye(2*N+2) - dt * theta* np.block([[As, 0]],
-                                                    [Afs, Af])
-R_seqsf = np.eye(2*N+2) - dt * theta     * np.block([[0, Asf]], 
-                                                    [0, 0])
+L_seqsf = np.eye(2*N+2) - dt * theta* np.block([[As, 0],
+                                                    [Afs, Af]])
+R_seqsf = np.eye(2*N+2) - dt * theta     * np.block([[0, Asf], 
+                                                    [0, 0]])
 M_seqsf = np.linalg.inv(L_seqsf) @ R_seqsf
 
 # Partitioned sequential Fluid-Structure
 W_seqfs = np.copy(W0)
-L_seqfs = TBD
-R_seqfs = TBD
-M_seqfs = np.linalg.inv(L_seqfs)*R_seqfs
+L_seqfs = np.eye(2*N+2) - dt * theta     * np.block([[As, Asf], 
+                                                    [0, Af]])
+R_seqfs = np.eye(2*N+2) - dt * theta     * np.block([[0, 0], 
+                                                    [Afs, 0]])
+M_seqfs = np.linalg.inv(L_seqfs) @ R_seqfs
 
 # Partitioned parallel
 W_par = np.copy(W0)
-L_par = TBD
-R_par = TBD
-M_par = np.linalg.inv(L_par)*R_par
+L_par = np.eye(2*N+2) - dt * theta     * np.block([[As, 0], 
+                                                    [0, Af]])
+R_par = np.eye(2*N+2) - dt * theta     * np.block([[0, Asf], 
+                                                    [Afs, 0]])
+M_par = np.linalg.inv(L_par) @ R_par
 ###############################################
 
 tvec = np.arange(Ndt)*dt
@@ -97,7 +101,7 @@ for i in range(Ndt):
                    W_seqsf[N+1] ,
                    W_seqfs[N+1] ,
                    W_par[N+1]  ])
-    evec[:,i+1] = np.array([0
+    evec[:,i+1] = np.array([0,
                    W_mono[:,np.newaxis]  * E * W_mono  / E0 - 1,
                    W_seqsf[:,np.newaxis] * E * W_seqsf / E0 - 1,
                    W_seqfs[:,np.newaxis] * E * W_seqfs / E0 - 1,
@@ -112,35 +116,35 @@ for i in range(5):
     evec[i,:] = evec[i,:]*showdata[i]
 
 
-figure[0]
-hold off
-title('Piston displacement')
-hold on
-plot(tvec,qvec)
-legend('Exact','Monolithic','Sequential S->F','Sequential F->S','Parallel','Location','Best')
-xlabel('Time')
-ylabel('Piston displacement')
-figure[1]
-hold off
-title('Piston velocity')
-hold on
-plot(tvec,uvec)
-legend('Exact','Monolithic','Sequential S->F','Sequential F->S','Parallel','Location','Best')
-xlabel('Time')
-ylabel('Piston velocity')
-figure(3)
-hold off
-title('Pressure at piston')
-hold on
-plot(tvec,pvec)
-legend('Exact','Monolithic','Sequential S->F','Sequential F->S','Parallel','Location','Best')
-xlabel('Time')
-ylabel('Interface pressure')
-figure(4)
-hold off
-title('System energy change (E - E_{exact})/E_0')
-hold on
-plot(tvec,evec)
-legend('Exact','Monolithic','Sequential S->F','Sequential F->S','Parallel','Location','Best')
-xlabel('Time')
-ylabel('System energy change')
+# figure[0]
+# hold off
+# title('Piston displacement')
+# hold on
+# plot(tvec,qvec)
+# legend('Exact','Monolithic','Sequential S->F','Sequential F->S','Parallel','Location','Best')
+# xlabel('Time')
+# ylabel('Piston displacement')
+# figure[1]
+# hold off
+# title('Piston velocity')
+# hold on
+# plot(tvec,uvec)
+# legend('Exact','Monolithic','Sequential S->F','Sequential F->S','Parallel','Location','Best')
+# xlabel('Time')
+# ylabel('Piston velocity')
+# figure(3)
+# hold off
+# title('Pressure at piston')
+# hold on
+# plot(tvec,pvec)
+# legend('Exact','Monolithic','Sequential S->F','Sequential F->S','Parallel','Location','Best')
+# xlabel('Time')
+# ylabel('Interface pressure')
+# figure(4)
+# hold off
+# title('System energy change (E - E_{exact})/E_0')
+# hold on
+# plot(tvec,evec)
+# legend('Exact','Monolithic','Sequential S->F','Sequential F->S','Parallel','Location','Best')
+# xlabel('Time')
+# ylabel('System energy change')
