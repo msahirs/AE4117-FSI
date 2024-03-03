@@ -54,13 +54,13 @@ L_seqsf =
 R_seqsf = 
 M_seqsf = inv(L_seqsf)*R_seqsf;
 
-% Partitioned sequential Fluid-Structure
+Partitioned sequential Fluid-Structure
 W_seqfs = W0;
 L_seqfs = 
 R_seqfs = 
 M_seqfs = inv(L_seqfs)*R_seqfs;
 
-% Partitioned parallel
+Partitioned parallel
 W_par = W0;
 L_par = 
 R_par = 

@@ -61,8 +61,8 @@ def get_exact_sol(o,N,t):
     W[:2,:]       = np.array([ -o*np.sin(o*t),
                         np.cos(o*t) ])
     W[2:N+2,:]= - o / np.sin(o) * np.cos(o*x[:,np.newaxis]) * np.cos(o*t)
-    W[N+1:2*N+2,:] = - o / np.sin(o) * np.sin(o*x[:,np.newaxis]) * np.sin(o*t)
-    
+    W[N+2:2*N+2,:] = - o / np.sin(o) * np.sin(o*x[:,np.newaxis]) * np.sin(o*t)
+    # print(W)
     return W
 
 def get_exact_omega(m,k, nmax_iter = 100):

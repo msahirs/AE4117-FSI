@@ -1,23 +1,24 @@
 import numpy as np
 import funcs
+from matplotlib import pyplot as plt
 
 # Number of cells in flow domain
-N = 10
+N = 64
 
 # Structural mass and stiffness
-m = 1
-k = 2
+m = 2
+k = 1
 
 
 # Time step size and number of time steps
 dt    = 0.1
-Ndt   = 100
+Ndt   = 1000
 
 # Integration method:
 #   theta = 0   : first order explicit Euler
 #   theta = 1/2 : second order trapezoidal rule
 #   theta = 1   : first order implicit Euler
-theta = 0.0
+theta = 1
 
 # spatial discretization:
 # 
@@ -28,7 +29,7 @@ As, Asf, Afs, Af = funcs.get_sys_mat(N,m,k)
 # Initial condition: piston displaced unit 1
 #                    based on exact solution
 omega = funcs.get_exact_omega(m,k)
-print(omega)
+# print(omega)
 W0    = funcs.get_exact_sol(omega,N,0)
 
 
@@ -36,7 +37,8 @@ W0    = funcs.get_exact_sol(omega,N,0)
 E       = 0.5 * np.eye(2*N+2) / N
 E[0,0]  = 0.5 * m
 E[1,1]  = 0.5 * k
-E0      = W0[:,np.newaxis] * E * W0
+E0      = W0.T @ E @ W0
+
 
 # Monolithic
 W_mono = np.copy(W0)
@@ -76,60 +78,70 @@ M_par = np.linalg.inv(L_par) @ R_par
 ###############################################
 
 tvec = np.arange(Ndt)*dt
-uvec = np.ones((5,1))*W0[0]
-qvec = np.ones((5,1))*W0[1]
-pvec = np.ones((5,1))*W0[N+1]
-evec = np.zeros((5,1))
+uvec = np.ones((5,Ndt))*W0[0]
+qvec = np.ones((5,Ndt))*W0[1]
+pvec = np.ones((5,Ndt))*W0[N+1]
+evec = np.zeros((5,Ndt))
 
 # print(funcs.get_exact_sol(omega,N,0))
 
 
 # Actual integration
 for i in range(Ndt):
+
     t       = i*dt
     W_exact = funcs.get_exact_sol(omega,N,t)
-    W_mono  = M_mono  * W_mono
-    W_seqsf = M_seqsf * W_seqsf
-    W_seqfs = M_seqfs * W_seqfs
-    W_par   = M_par   * W_par
 
-    print(W_mono)
-    # print(np.array([W_exact[0],
-    #                W_mono[0] ,
-    #                W_seqsf[0] ,
-    #                W_seqfs[0] ,
-    #                W_par[0]  ]))
+    W_mono  = M_mono  @ W_mono
+    W_seqsf = M_seqsf @ W_seqsf
+    W_seqfs = M_seqfs @ W_seqfs
+    W_par   = M_par   @ W_par
 
-    uvec[:,i] = np.array([W_exact[0],
-                   W_mono[0] ,
-                   W_seqsf[0] ,
-                   W_seqfs[0] ,
-                   W_par[0]  ])
-    qvec[:,i] = np.array([W_exact[1],
-                   W_mono[1] ,
-                   W_seqsf[1] ,
-                   W_seqfs[1] ,
-                   W_par[1]  ])[:,np.newaxis]
-    pvec[:,i] = np.array([W_exact[N+1],
-                   W_mono[N+1] ,
-                   W_seqsf[N+1] ,
-                   W_seqfs[N+1] ,
-                   W_par[N+1]  ])[:,np.newaxis]
+    uvec[:,i] = np.array([W_exact[0,0],
+                   W_mono[0,0] ,
+                   W_seqsf[0,0] ,
+                   W_seqfs[0,0] ,
+                   W_par[0,0]  ])
+    qvec[:,i] = np.array([W_exact[1,0],
+                   W_mono[1,0] ,
+                   W_seqsf[1,0] ,
+                   W_seqfs[1,0] ,
+                   W_par[1,0]  ])
+    
+    pvec[:,i] = np.array([W_exact[N+1,0],
+                   W_mono[N+1,0] ,
+                   W_seqsf[N+1,0] ,
+                   W_seqfs[N+1,0] ,
+                   W_par[N+1,0]  ])
+    
+    
     evec[:,i] = np.array([0,
-                   W_mono[:,np.newaxis]  * E * W_mono  / E0 - 1,
-                   W_seqsf[:,np.newaxis] * E * W_seqsf / E0 - 1,
-                   W_seqfs[:,np.newaxis] * E * W_seqfs / E0 - 1,
-                   W_par[:,np.newaxis]   * E * W_par   / E0 - 1 ])
+                   (W_mono.T  * E * W_mono  / E0 )[0,0],
+                   (W_seqsf.T * E * W_seqsf.T / E0)[0,0],
+                   (W_seqfs.T * E * W_seqfs.T / E0 )[0,0],
+                   (W_par.T   * E * W_par.T   / E0)[0,0] ])
 
 
-showdata = [1]*5
-for i in range(5):
-    qvec[i,:] = qvec[i,:]*showdata[i]
-    uvec[i,:] = uvec[i,:]*showdata[i]
-    pvec[i,:] = pvec[i,:]*showdata[i]
-    evec[i,:] = evec[i,:]*showdata[i]
+
+# for i in range(5):
+#     qvec[i,:] = qvec[i,:]*showdata[i]
+#     uvec[i,:] = uvec[i,:]*showdata[i]
+#     pvec[i,:] = pvec[i,:]*showdata[i]
+#     evec[i,:] = evec[i,:]*showdata[i]
+
+plt.title(f"u v time, dt = {dt}, N = {N}")
+plt.plot(tvec,uvec[0],'--',label = 'exact')
+plt.plot(tvec,uvec[1], label = 'mono')
+plt.plot(tvec,uvec[2], label = 's->f')
+plt.plot(tvec,uvec[3], label = 'f->s')
+plt.plot(tvec,uvec[4], label = 'parallel')
 
 
+plt.xlabel("Time [s]")
+plt.ylabel("u")
+plt.legend()
+
+plt.show()
 # figure[0]
 # hold off
 # title('Piston displacement')
