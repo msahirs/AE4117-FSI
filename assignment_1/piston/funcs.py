@@ -39,8 +39,9 @@ def get_exact_initsol(o,N,t):
     W_s = np.array([-o*np.sin(o*t), np.cos(o*t) ])
     W_f = np.zeros((2*N,1));
 
-    x = np.arange(0.5/N,1/N,(1-0.5/N))
-
+    x = np.arange(0.5/N,(1-0.5/N),1/N)
+    print(x)
+    print(1)
     W_f[:N] = - o/np.sin(o) * np.cos(o*x[:,np.newaxis]) * np.cos(o*t)
     W_f[N:2*N] = - o/np.sin(o) * np.sin(o*x[:,np.newaxis]) * np.sin(o*t)
 
@@ -55,8 +56,7 @@ def get_exact_sol(o,N,t):
         t = np.array(t)
 
     
-    x = np.arange(0.5/N,1/N,(1-0.5/N))
-
+    x = np.arange(0.5/N,(1-0.5/N),1/N + 1)
     W = np.zeros((2*N+2,len(t)));
     W[:2,:]       = np.array([ -o*np.sin(o*t),
                         np.cos(o*t) ])
