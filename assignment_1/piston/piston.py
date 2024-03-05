@@ -12,13 +12,13 @@ k = 1
 
 # Time step size and number of time steps
 dt    = 0.1
-Ndt   = 100
+Ndt   = 1000
 
 # Integration method:
 #   theta = 0   : first order explicit Euler
 #   theta = 1/2 : second order trapezoidal rule
 #   theta = 1   : first order implicit Euler
-theta = 0
+theta = 0.5
 
 # spatial discretization:
 # 
@@ -122,8 +122,6 @@ for i in range(Ndt):
                    (W_seqfs.T @ E @ W_seqfs / E0 -1)[0,0],
                    (W_par.T   @ E @ W_par   / E0 -1)[0,0] ])
 
-
-
 # for i in range(5):
 #     qvec[i,:] = qvec[i,:]*showdata[i]
 #     uvec[i,:] = uvec[i,:]*showdata[i]
@@ -132,17 +130,28 @@ for i in range(Ndt):
 
 lst = [uvec, qvec, pvec, evec]
 quote = ['u', 'q', 'p', 'e']
+figure_name = ['theta_uvec', 'theta_qvec', 'theta_pvec', 'theta_evec']
 for i in range(0,4):
-    plt.plot(tvec,lst[i][0],'--',dashes=(5, 1), label = 'exact')
+    plt.figure(figure_name[i])
+    plt.clf()
+    # # funky truncation fix to preserve graph for forward euler, monolithic solution
+    # if (theta == 0):
+    #     truc_limit = 5
+    #     plt.plot(tvec[:truc_limit],lst[i][1][:truc_limit], label = 'mono (divergent)') # plot only the first k few time-steps
+    # else:
+    #     plt.plot(tvec,lst[i][1],'--', dashes=(5, 3), label = 'mono') # plot entire time series
+    plt.plot(tvec,lst[i][0], label = 'exact')
     plt.plot(tvec,lst[i][1],'--', dashes=(5, 3), label = 'mono')
-    plt.plot(tvec,lst[i][2], label = 's->f')
-    plt.plot(tvec,lst[i][3], label = 'f->s')
-    plt.plot(tvec,lst[i][4], label = 'parallel')
+    plt.plot(tvec,lst[i][2],  label = 's->f')
+    plt.plot(tvec,lst[i][3],'--',dashes=(5, 1), label = 'f->s')
+    plt.plot(tvec,lst[i][4], '--', dashes=(5, 5), label = 'parallel')
     plt.xlabel("Time [s]")
     plt.ylabel(f"{quote[i]}")
     plt.legend()
     plt.show()
-print(lst[3][1][-1]-lst[3][0][-1])
-print(lst[3][2][-1]-lst[3][0][-1])
-print(lst[3][3][-1]-lst[3][0][-1])
-print(lst[3][4][-1]-lst[3][0][-1])
+# print(lst[3][1][-1]-lst[3][0][-1])
+# print(lst[3][2][-1]-lst[3][0][-1])
+# print(lst[3][3][-1]-lst[3][0][-1])
+# print(lst[3][4][-1]-lst[3][0][-1])
+print(f'Remaining energy in system: Partioned Scheme vs Monolithic \nSerial S->F {np.abs(evec[2, -1]- evec[1,-1])} \nSerial F->S {np.abs(evec[3, -1]- evec[1,-1])} \nParallel: {np.abs(evec[4, -1]- evec[1,-1])} ')
+print(f'Remaining energy in system: Partioned Scheme vs Exact \nSerial S->F {np.abs(evec[2, -1]- evec[0,-1])} \nSerial F->S {np.abs(evec[3, -1]- evec[0,-1])} \nParallel: {np.abs(evec[4, -1]- evec[0,-1])} ')
