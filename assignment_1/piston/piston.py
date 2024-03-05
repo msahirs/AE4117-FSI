@@ -12,13 +12,13 @@ k = 1
 
 # Time step size and number of time steps
 dt    = 0.1
-Ndt   = 100
+Ndt   = 1000
 
 # Integration method:
 #   theta = 0   : first order explicit Euler
 #   theta = 1/2 : second order trapezoidal rule
 #   theta = 1   : first order implicit Euler
-theta = 0
+theta = 0.5
 
 # spatial discretization:
 # 
@@ -31,7 +31,7 @@ As, Asf, Afs, Af = funcs.get_sys_mat(N,m,k)
 omega = funcs.get_exact_omega(m,k)
 
 W0    = funcs.get_exact_sol(omega,N,0)
-print(W0)
+# print(W0)
 
 
 # Energy matrix: Energy = W' * E * W

@@ -11,7 +11,7 @@ def get_sys_mat(N,m,k):
 
     Asf[0,-N-1] = 1/m;
 
-    Afs[-1,0]= -N;
+    Afs[-N-1,0]= -N;
 
     Af[:N-1, N+1:2*N] -= np.eye(N-1)
     Af[1:N, N:2*N-1] += np.eye(N-1)

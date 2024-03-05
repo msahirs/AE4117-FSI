@@ -5,7 +5,7 @@ from scipy.signal import find_peaks
 
 
 # Number of cells in flow domain
-N = 4
+N = 64
 
 # Structural mass and stiffness
 m = 2
@@ -13,7 +13,7 @@ k = 1
 
 
 # Time step size and number of time steps
-dt    = 0.01
+dt    = 0.1
 Ndt   = 100
 
 # Integration method:
