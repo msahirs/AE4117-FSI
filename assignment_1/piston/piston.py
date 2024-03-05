@@ -120,7 +120,7 @@ for i in range(Ndt):
                    (W_mono.T  @ E @ W_mono  / E0 )[0,0],
                    (W_seqsf.T @ E @ W_seqsf / E0)[0,0],
                    (W_seqfs.T @ E @ W_seqfs / E0 )[0,0],
-                   (W_par.T   @ E * W_par   / E0)[0,0] ])
+                   (W_par.T   @ E @ W_par   / E0)[0,0] ])
 
 
 
@@ -130,48 +130,19 @@ for i in range(Ndt):
 #     pvec[i,:] = pvec[i,:]*showdata[i]
 #     evec[i,:] = evec[i,:]*showdata[i]
 
-plt.title(f"q v time, dt = {dt}, N = {N}")
-plt.plot(tvec,qvec[0],'--',label = 'exact')
-plt.plot(tvec,qvec[1], label = 'mono')
-plt.plot(tvec,qvec[2], label = 's->f')
-plt.plot(tvec,qvec[3], label = 'f->s')
-plt.plot(tvec,qvec[4], label = 'parallel')
-
-
-plt.xlabel("Time [s]")
-plt.ylabel("q")
-plt.legend()
-
-plt.show()
-# figure[0]
-# hold off
-# title('Piston displacement')
-# hold on
-# plot(tvec,qvec)
-# legend('Exact','Monolithic','Sequential S->F','Sequential F->S','Parallel','Location','Best')
-# xlabel('Time')
-# ylabel('Piston displacement')
-# figure[1]
-# hold off
-# title('Piston velocity')
-# hold on
-# plot(tvec,uvec)
-# legend('Exact','Monolithic','Sequential S->F','Sequential F->S','Parallel','Location','Best')
-# xlabel('Time')
-# ylabel('Piston velocity')
-# figure(3)
-# hold off
-# title('Pressure at piston')
-# hold on
-# plot(tvec,pvec)
-# legend('Exact','Monolithic','Sequential S->F','Sequential F->S','Parallel','Location','Best')
-# xlabel('Time')
-# ylabel('Interface pressure')
-# figure(4)
-# hold off
-# title('System energy change (E - E_{exact})/E_0')
-# hold on
-# plot(tvec,evec)
-# legend('Exact','Monolithic','Sequential S->F','Sequential F->S','Parallel','Location','Best')
-# xlabel('Time')
-# ylabel('System energy change')
+lst = [uvec, qvec, pvec, evec]
+quote = ['u', 'q', 'p', 'e']
+for i in range(0,4):
+    plt.plot(tvec,lst[i][0],'--',dashes=(5, 1), label = 'exact')
+    plt.plot(tvec,lst[i][1],'--', dashes=(5, 3), label = 'mono')
+    plt.plot(tvec,lst[i][2], label = 's->f')
+    plt.plot(tvec,lst[i][3], label = 'f->s')
+    plt.plot(tvec,lst[i][4], label = 'parallel')
+    plt.xlabel("Time [s]")
+    plt.ylabel(f"{quote[i]}")
+    plt.legend()
+    plt.show()
+print(lst[3][1][-1]-lst[3][0][-1])
+print(lst[3][2][-1]-lst[3][0][-1])
+print(lst[3][3][-1]-lst[3][0][-1])
+print(lst[3][4][-1]-lst[3][0][-1])

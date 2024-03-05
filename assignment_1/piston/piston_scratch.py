@@ -5,7 +5,7 @@ from scipy.signal import find_peaks
 
 
 # Number of cells in flow domain
-N = 64
+N = 4
 
 # Structural mass and stiffness
 m = 2
@@ -13,7 +13,7 @@ k = 1
 
 
 # Time step size and number of time steps
-dt    = 0.1
+dt    = 0.01
 Ndt   = 100
 
 # Integration method:
@@ -48,7 +48,7 @@ A_mono = np.vstack((np.hstack((As, Asf)),
            np.hstack((Afs, Af))))
 L_mono = np.eye(2*N+2) - dt * theta     * A_mono
 R_mono = np.eye(2*N+2) + dt * (1-theta) * A_mono
-M_mono = np.linalg.inv(L_mono)*R_mono
+M_mono = np.linalg.inv(L_mono)@R_mono
 
 ###############################################
 ## FILL IN THE PARTITIONG SCHEMES BELOW      ##
@@ -118,10 +118,10 @@ for i in range(Ndt):
     
     
     evec[:,i] = np.array([0,
-                   (W_mono.T  * E * W_mono  / E0 )[0,0],
-                   (W_seqsf.T * E * W_seqsf.T / E0)[0,0],
-                   (W_seqfs.T * E * W_seqfs.T / E0 )[0,0],
-                   (W_par.T   * E * W_par.T   / E0)[0,0] ])
+                   (W_mono.T  @ E @ W_mono  / E0 )[0,0],
+                   (W_seqsf.T @ E @ W_seqsf / E0)[0,0],
+                   (W_seqfs.T @ E @ W_seqfs / E0 )[0,0],
+                   (W_par.T   @ E @ W_par / E0)[0,0] ])
 
 ## if FE:
 # coefficients = np.polyfit(tvec, evec[2], 2) # FE, S->F SERIAL
@@ -135,50 +135,19 @@ for i in range(Ndt):
 #     pvec[i,:] = pvec[i,:]*showdata[i]
 #     evec[i,:] = evec[i,:]*showdata[i]
 
-plt.title(f"u v time, dt = {dt}, N = {N}")
-plt.clf()
-plt.plot(tvec,evec[0],'--',label = 'exact')
-plt.plot(tvec,evec[1], label = 'mono')
-plt.plot(tvec,evec[2], label = 's->f')
-plt.plot(tvec,evec[3], label = 'f->s')
-plt.plot(tvec,evec[4], label = 'parallel')
-# plt.plot(tvec, p(tvec), ':', label = 'line fit for forward euler s->f = paralel')
-
-
-plt.xlabel("Time [s]")
-plt.ylabel("u")
-plt.legend()
-
-plt.show()
-# figure[0]
-# hold off
-# title('Piston displacement')
-# hold on
-# plot(tvec,qvec)
-# legend('Exact','Monolithic','Sequential S->F','Sequential F->S','Parallel','Location','Best')
-# xlabel('Time')
-# ylabel('Piston displacement')
-# figure[1]
-# hold off
-# title('Piston velocity')
-# hold on
-# plot(tvec,uvec)
-# legend('Exact','Monolithic','Sequential S->F','Sequential F->S','Parallel','Location','Best')
-# xlabel('Time')
-# ylabel('Piston velocity')
-# figure(3)
-# hold off
-# title('Pressure at piston')
-# hold on
-# plot(tvec,pvec)
-# legend('Exact','Monolithic','Sequential S->F','Sequential F->S','Parallel','Location','Best')
-# xlabel('Time')
-# ylabel('Interface pressure')
-# figure(4)
-# hold off
-# title('System energy change (E - E_{exact})/E_0')
-# hold on
-# plot(tvec,evec)
-# legend('Exact','Monolithic','Sequential S->F','Sequential F->S','Parallel','Location','Best')
-# xlabel('Time')
-# ylabel('System energy change')
+lst = [uvec, qvec, pvec, evec]
+quote = ['u', 'q', 'p', 'e']
+for i in range(0,4):
+    plt.plot(tvec,lst[i][0],'--',dashes=(5, 1), label = 'exact')
+    plt.plot(tvec,lst[i][1],'--', dashes=(5, 3), label = 'mono')
+    plt.plot(tvec,lst[i][2], label = 's->f')
+    plt.plot(tvec,lst[i][3], label = 'f->s')
+    plt.plot(tvec,lst[i][4], label = 'parallel')
+    plt.xlabel("Time [s]")
+    plt.ylabel(f"{quote[i]}")
+    plt.legend()
+    plt.show()
+print(lst[3][1][-1]-lst[3][0][-1])
+print(lst[3][2][-1]-lst[3][0][-1])
+print(lst[3][3][-1]-lst[3][0][-1])
+print(lst[3][4][-1]-lst[3][0][-1])
