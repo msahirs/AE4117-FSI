@@ -12,13 +12,13 @@ k = 1
 
 # Time step size and number of time steps
 dt    = 0.1
-Ndt   = 1000
+Ndt   = 100
 
 # Integration method:
 #   theta = 0   : first order explicit Euler
 #   theta = 1/2 : second order trapezoidal rule
 #   theta = 1   : first order implicit Euler
-theta = 0.5
+theta = 0
 
 # spatial discretization:
 # 
@@ -117,10 +117,10 @@ for i in range(Ndt):
     
     
     evec[:,i] = np.array([0,
-                   (W_mono.T  @ E @ W_mono  / E0 )[0,0],
-                   (W_seqsf.T @ E @ W_seqsf / E0)[0,0],
-                   (W_seqfs.T @ E @ W_seqfs / E0 )[0,0],
-                   (W_par.T   @ E @ W_par   / E0)[0,0] ])
+                   (W_mono.T  @ E @ W_mono  / E0 -1 )[0,0],
+                   (W_seqsf.T @ E @ W_seqsf / E0 -1)[0,0],
+                   (W_seqfs.T @ E @ W_seqfs / E0 -1)[0,0],
+                   (W_par.T   @ E @ W_par   / E0 -1)[0,0] ])
 
 
 
