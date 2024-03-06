@@ -118,10 +118,10 @@ for i in range(Ndt):
     
     
     evec[:,i] = np.array([0,
-                   (W_mono.T  @ E @ W_mono  / E0 )[0,0],
-                   (W_seqsf.T @ E @ W_seqsf / E0)[0,0],
-                   (W_seqfs.T @ E @ W_seqfs / E0 )[0,0],
-                   (W_par.T   @ E @ W_par / E0)[0,0] ])
+                   (W_mono.T  @ E @ W_mono  / E0 -1)[0,0],
+                   (W_seqsf.T @ E @ W_seqsf / E0 -1)[0,0],
+                   (W_seqfs.T @ E @ W_seqfs / E0 -1)[0,0],
+                   (W_par.T   @ E @ W_par / E0 -1)[0,0] ])
 
 ## if FE:
 # coefficients = np.polyfit(tvec, evec[2], 2) # FE, S->F SERIAL

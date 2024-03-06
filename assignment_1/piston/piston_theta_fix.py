@@ -12,7 +12,7 @@ k = 1
 
 # Time step size and number of time steps
 dt    = 0.1
-Ndt   = 10000
+Ndt   = 1000
 
 # Integration method:
 #   theta = 0   : first order explicit Euler
@@ -54,28 +54,29 @@ M_mono = np.linalg.inv(L_mono)@R_mono
 ###############################################
 # print(np.block([[As, 0], [Afs, Af]]))
 # Partitioned sequential Structure-Fluid
+
 np.block([[As, np.zeros((2,2*N))], [Afs, Af]])
 W_seqsf = np.copy(W0)
 L_seqsf = np.eye(2*N+2) - dt * theta* np.block([[As, np.zeros((2,2*N))],
                                                     [Afs, Af]])
-R_seqsf = np.eye(2*N+2) + dt * (1-theta)     * np.block([[np.zeros((2,2)), Asf], 
-                                                    [np.zeros((2*N,2)), np.zeros((2*N,2*N))]])
+R_seqsf = np.eye(2*N+2) + dt * np.block([[(1-theta)*As, Asf], 
+                                                    [(1-theta)*Afs, (1-theta)*Af]])
 M_seqsf = np.linalg.inv(L_seqsf) @ R_seqsf
 
 # Partitioned sequential Fluid-Structure
 W_seqfs = np.copy(W0)
 L_seqfs = np.eye(2*N+2) - dt * theta     * np.block([[As, Asf], 
                                                     [np.zeros((2*N,2)), Af]])
-R_seqfs = np.eye(2*N+2) + dt * (1-theta)     * np.block([[np.zeros((2,2)), np.zeros((2,2*N))], 
-                                                    [Afs, np.zeros((2*N,2*N))]])
+R_seqfs = np.eye(2*N+2) + dt * np.block([[(1-theta)*As,(1-theta)* Asf], 
+                                                    [Afs, (1-theta)*Af]])
 M_seqfs = np.linalg.inv(L_seqfs) @ R_seqfs
 
 # Partitioned parallel
 W_par = np.copy(W0)
 L_par = np.eye(2*N+2) - dt * theta     * np.block([[As, np.zeros((2,2*N))], 
                                                     [np.zeros((2*N,2)), Af]])
-R_par = np.eye(2*N+2) + dt * (1-theta)     * np.block([[np.zeros((2,2)), Asf], 
-                                                    [Afs, np.zeros((2*N,2*N))]])
+R_par = np.eye(2*N+2) + dt * np.block([[(1-theta)*As, Asf], 
+                                                    [Afs, (1-theta)*Af]])
 M_par = np.linalg.inv(L_par) @ R_par
 ###############################################
 
