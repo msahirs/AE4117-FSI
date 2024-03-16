@@ -1,0 +1,262 @@
+%% Initialization
+
+% Check if number of structure points already defined
+if ( ~exist('Ns','var') )
+    Ns    = 51;
+end
+
+% Check if number of fluid points already defined
+if ( ~exist('Nf','var') )
+    Nf    = 71;
+end
+
+% Define the number of discrete points to approximate the exact solution
+% with
+Nfine = 10001;
+
+% Prescribe:
+%   Xs: structure point location [x y]
+%   Ds: structure point displacement
+%   Xf: fluid point location [x y]
+%   Pf: fluid point pressure
+%   Xi: location of x coordinates exact solution
+Xs = zeros(Ns,2);
+Ds = zeros(Ns,1);
+Xf = zeros(Nf,2);
+Pf = zeros(Nf,1);
+
+Xs(:,1) = (0:Ns-1)/(Ns-1);
+Xs(:,2) = cos(2*pi*Xs(:,1));
+Xf(:,1) = (0:Nf-1)/(Nf-1);
+Xf(:,2) = cos(2*pi*Xf(:,1));
+
+Ds(:,1) = sin(2*pi*Xs(:,1));
+Pf(:,1) = sin(2*pi*Xf(:,1));
+
+Xi = (0:Nfine-1)/(Nfine-1);
+
+% mesh spacings for structure and fluid mesh
+dxs = 1/(Ns-1);
+dxf = 1/(Nf-1);
+
+% Integration matrix to convert pressures to forces, e.g. F = M*P
+Ms        = eye(Ns)*dxs;
+Ms(1,1)   = dxs/2;
+Ms(Ns,Ns) = dxs/2;
+
+Mf        = eye(Nf)*dxf;
+Mf(1,1)   = dxf/2;
+Mf(Nf,Nf) = dxf/2;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% CONSTRUCTION OF INTERPOLATION MATRICES %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Nearest Neighbor Interpolation structure -> flow
+HsfNN = zeros(Nf, Ns);
+for i=1:Nf
+    % IMPLEMENT HERE:
+    % Create boolean matrix: find the closest structure point j for each
+    % fluid mesh point i:
+    HsfNN(i,j) = 1;
+end
+
+%% Nearest Neighbor Interpolation flow -> structure
+HfsNN = zeros(Ns, Nf);
+for i=1:Ns
+    % IMPLEMENT HERE:
+    % Create boolean matrix: find the closest fluid point j for each
+    % structure mesh point i: 
+    HfsNN(i,j) = 1;
+end
+
+
+%% RBF interpolation structure -> flow
+PHI = zeros(Ns);
+P   = zeros(Ns,3);
+
+% PHI is the RBF matrix
+% P is the matrix for the linear polynomial
+
+% IMPLEMENT HERE:
+% Define the polynomial matrix P = [1 x1 y1 ; 1 x2 y2 ; ... ]
+
+% IMPLEMENT HERE:
+% Define the RBF matrix PHI(i,j) = phi(|| x_i - x_j ||)
+for i=1:Ns
+    for j=1:Ns
+
+        PHI(i,j) = 
+    
+    end
+end
+
+
+% Matrix to satisfy constraints: Ds = C * gamma
+% gamma, the RBF coefficients: gamma = inv(C)*Ds
+C    = [PHI P ; P' zeros(3)];
+% SvZ: In Matlab-R2013 the inverse is not computed accurately anymore
+% invC = inv(C);
+
+% Define the interpolation to the fluid mesh
+PHI = zeros(Nf,Ns);
+P   = zeros(Nf,3);
+
+% PHI is the RBF matrix
+% P is the matrix for the linear polynomial
+
+% IMPLEMENT HERE:
+% Define the polynomial matrix P = [1 x1 y1 ; 1 x2 y2 ; ... ]
+
+% IMPLEMENT HERE:
+% Define the RBF matrix PHI(i,j) = phi(|| x_i - x_j ||)
+for i=1:Nf
+    for j=1:Ns
+
+        PHI(i,j) = 
+    
+    end
+end
+
+% transformation matrix = [PHI P] * invC
+% HsfRBF = [PHI P] * invC(:,1:Ns);
+% SvZ: In Matlab-R2013 the inverse is not computed accurately
+%    : Using the forward-slash operator to right-multiply by
+%    : the inverse of C instead
+HsfRBF = [PHI P]/C;
+HsfRBF = HsfRBF(:,1:Ns);
+
+
+%% RBF interpolation flow -> structure
+PHI = zeros(Nf);
+P   = zeros(Nf,3);
+
+% PHI is the RBF matrix
+% P is the matrix for the linear polynomial
+
+% IMPLEMENT HERE:
+% Define the polynomial matrix P = [1 x1 y1 ; 1 x2 y2 ; ... ]
+
+% IMPLEMENT HERE:
+% Define the RBF matrix PHI(i,j) = phi(|| x_i - x_j ||)
+for i=1:Nf
+    for j=1:Nf
+
+        PHI(i,j) = 
+    
+    end
+end
+
+
+% Matrix to satisfy constraints: Ds = C * gamma
+% gamma, the RBF coefficients: gamma = inv(C)*Df
+C    = [PHI P ; P' zeros(3)];
+% SvZ: In Matlab-R2013 the inverse is not computed accurately anymore
+% invC = inv(C);
+
+% Define the interpolation to the structure mesh
+PHI = zeros(Ns,Nf);
+P   = zeros(Ns,3);
+
+% PHI is the RBF matrix
+% P is the matrix for the linear polynomial
+
+% IMPLEMENT HERE:
+% Define the polynomial matrix P = [1 x1 y1 ; 1 x2 y2 ; ... ]
+
+% IMPLEMENT HERE:
+% Define the RBF matrix PHI(i,j) = phi(|| x_i - x_j ||)
+for i=1:Ns
+    for j=1:Nf
+
+        PHI(i,j) = 
+        
+    end
+end
+
+% transformation matrix = [PHI P] * invC
+%HfsRBF = [PHI P] * invC(:,1:Nf);
+% SvZ: In Matlab-R2013 the inverse is not computed accurately
+%    : Using the forward-slash operator to right-multiply by
+%    : the inverse of C instead
+HfsRBF = [PHI P]/C;
+HfsRBF = HfsRBF(:,1:Nf);
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% PERFORM INTERPOLATIONS FOR DISPLACEMENTS AND PRESSURES %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Compute displacements
+Df_NN  = HsfNN  * Ds;
+Df_RBF = HsfRBF * Ds;
+Df_ex  = sin(2*pi*Xi);
+
+%% Show displacements
+figure(1)
+hold off
+plot(Xi,Df_ex,'b-');
+hold on
+plot(Xf(:,1),Df_NN, 'r-');
+plot(Xf(:,1),Df_RBF, 'g-');
+legend('Exact','NN','RBF');
+xlabel('x');
+ylabel('displacement in fluid points');
+
+% compute RMS error by linear interpolation between fluid points
+err_Df_NN  = norm(interp1(Xf(:,1),Df_NN ,Xi,'linear')-Df_ex)/sqrt(Nfine);
+err_Df_RBF = norm(interp1(Xf(:,1),Df_RBF,Xi,'linear')-Df_ex)/sqrt(Nfine);
+
+
+%% Compute pressures - consistent approach
+Ps_NN  = HfsNN  * Pf;
+Ps_RBF = HfsRBF * Pf;
+Pf_ex  = sin(2*pi*Xi);
+
+%% Show pressures
+figure(2)
+hold off
+plot(Xi,Pf_ex,'b-');
+hold on
+plot(Xs(:,1),Ps_NN, 'r-');
+plot(Xs(:,1),Ps_RBF, 'g-');
+xlabel('x');
+ylabel('pressures in fluid points');
+
+% compute RMS error by linear interpolation between structure points
+err_Ps_NN  = norm(interp1(Xs(:,1),Ps_NN ,Xi,'linear')-Df_ex)/sqrt(Nfine);
+err_Ps_RBF = norm(interp1(Xs(:,1),Ps_RBF,Xi,'linear')-Df_ex)/sqrt(Nfine);
+
+%% Compute pressures - conservative approach
+% IMPLEMENT HERE:
+% compute the interpolation of the pressure using the conservative
+% approach, e.g.: Fs'*Ds = Ff'*Df
+% Fs = Ms * Ps
+% Ff = Mf * Pf
+% Df =  H * Ds
+% One obtains: Ps = .... * Pf
+Ps_NN_cv  = 
+Ps_RBF_cv = 
+Pf_ex     = sin(2*pi*Xi);
+
+%% Show pressures
+figure(2)
+plot(Xs(:,1),Ps_NN_cv, 'r--');
+plot(Xs(:,1),Ps_RBF_cv, 'g--');
+legend('Exact','NN','RBF','NN - conservative','RBF - conservative');
+
+% compute RMS error by linear interpolation between structure points
+err_Ps_NN_cv  = norm(interp1(Xs(:,1),Ps_NN_cv ,Xi,'linear')-Df_ex)/sqrt(Nfine);
+err_Ps_RBF_cv = norm(interp1(Xs(:,1),Ps_RBF_cv,Xi,'linear')-Df_ex)/sqrt(Nfine);
+
+%% Compute error in work at interface (work on fluid side should be equal
+% dW_fluid     = (F'*D)_fluid
+% dW_structure = (F'*D)_structure
+% error_dW     = |dW_fluid - dW_structure|
+
+% IMPLEMENT HERE:
+% Compute the work on the interface on the fluid side and the structure
+% side and store the error in the conservation of work over the interface
+err_dW_NN     = abs( (Mf*Pf)' * Df_NN  -  (Ms*Ps_NN)' * Ds );
+err_dW_NN_cv  = 
+err_dW_RBF    = 
+err_dW_RBF_cv = 
