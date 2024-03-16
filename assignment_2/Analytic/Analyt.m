@@ -9,7 +9,8 @@ end
 if ( ~exist('Nf','var') )
     Nf    = 71;
 end
-
+% Ns    = 51;
+% Nf    = 71;
 % Define the number of discrete points to approximate the exact solution
 % with
 Nfine = 10001;
@@ -72,10 +73,18 @@ end
 
 %% Nearest Neighbor Interpolation flow -> structure
 HfsNN = zeros(Ns, Nf);
-% IMPLEMENT HERE:
-% Create boolean matrix: find the closest fluid point j for each
-% structure mesh point i: 
-HfsNN = (Mf*HsfNN*inv(Ms))';
+for i=1:Ns
+    minDist = Inf;
+    closestIndex = 0;
+    for j = 1:Nf
+        distance = sqrt((Xf(j,1) - Xs(i,1))^2 + (Xf(j,2) - Xs(i,2))^2);
+        if distance < minDist
+            minDist = distance;
+            closestIndex = j;
+        end
+    end
+    HfsNN(i, closestIndex) = 1;
+end
 
 %% RBF interpolation structure -> flow
 PHI = zeros(Ns);
@@ -269,8 +278,8 @@ err_Ps_RBF = norm(interp1(Xs(:,1),Ps_RBF,Xi,'linear')-Df_ex)/sqrt(Nfine);
 % Ff = Mf * Pf
 % Df =  H * Ds
 % One obtains: Ps = .... * Pf
-Ps_NN_cv  = 
-Ps_RBF_cv = 
+Ps_NN_cv  = (Mf*HsfNN*inv(Ms))' * Pf;
+Ps_RBF_cv = (Mf*HsfRBF*inv(Ms))' * Pf;
 Pf_ex     = sin(2*pi*Xi);
 
 %% Show pressures
@@ -283,15 +292,15 @@ legend('Exact','NN','RBF','NN - conservative','RBF - conservative');
 err_Ps_NN_cv  = norm(interp1(Xs(:,1),Ps_NN_cv ,Xi,'linear')-Df_ex)/sqrt(Nfine);
 err_Ps_RBF_cv = norm(interp1(Xs(:,1),Ps_RBF_cv,Xi,'linear')-Df_ex)/sqrt(Nfine);
 
-%% Compute error in work at interface (work on fluid side should be equal
-% dW_fluid     = (F'*D)_fluid
-% dW_structure = (F'*D)_structure
-% error_dW     = |dW_fluid - dW_structure|
-
-% IMPLEMENT HERE:
-% Compute the work on the interface on the fluid side and the structure
-% side and store the error in the conservation of work over the interface
-err_dW_NN     = abs( (Mf*Pf)' * Df_NN  -  (Ms*Ps_NN)' * Ds );
-err_dW_NN_cv  = 
-err_dW_RBF    = 
-err_dW_RBF_cv = 
+% %% Compute error in work at interface (work on fluid side should be equal
+% % dW_fluid     = (F'*D)_fluid
+% % dW_structure = (F'*D)_structure
+% % error_dW     = |dW_fluid - dW_structure|
+% 
+% % IMPLEMENT HERE:
+% % Compute the work on the interface on the fluid side and the structure
+% % side and store the error in the conservation of work over the interface
+% err_dW_NN     = abs( (Mf*Pf)' * Df_NN  -  (Ms*Ps_NN)' * Ds );
+% err_dW_NN_cv  = 
+% err_dW_RBF    = 
+% err_dW_RBF_cv = 
