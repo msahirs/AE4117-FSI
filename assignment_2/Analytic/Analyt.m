@@ -100,6 +100,7 @@ for i=1:Ns
             PHI(i,j) = 0;
         else
             PHI(i,j) = (1-x_ij/r)^4*(4*x_ij/r+1);
+        end
     end
 end
 
