@@ -88,7 +88,7 @@ P   = zeros(Ns,3);
 % Define the polynomial matrix P = [1 x1 y1 ; 1 x2 y2 ; ... ]
 P(:, 1) = 1; % 1
 P(:, 2) = Xs(:,1); % x_i
-P(:, 2) = Xs(:,1); % y_i
+P(:, 3) = Xs(:,2); % y_i
 
 % IMPLEMENT HERE:
 % Define the RBF matrix PHI(i,j) = phi(|| x_i - x_j ||)
