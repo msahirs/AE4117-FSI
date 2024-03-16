@@ -54,11 +54,9 @@ Mf(Nf,Nf) = dxf/2;
 
 %% Nearest Neighbor Interpolation structure -> flow
 HsfNN = zeros(Nf, Ns);
-
 % IMPLEMENT HERE:
 % Create boolean matrix: find the closest structure point j for each
 % fluid mesh point i:
-HsfNN = zeros(Nf, Ns);
 for i = 1:Nf
     minDist = Inf;
     closestIndex = 0;
@@ -72,16 +70,12 @@ for i = 1:Nf
     HsfNN(i, closestIndex) = 1;
 end
 
-
 %% Nearest Neighbor Interpolation flow -> structure
 HfsNN = zeros(Ns, Nf);
-for i=1:Ns
-    % IMPLEMENT HERE:
-    % Create boolean matrix: find the closest fluid point j for each
-    % structure mesh point i: 
-    HfsNN(i,j) = 1;
-end
-
+% IMPLEMENT HERE:
+% Create boolean matrix: find the closest fluid point j for each
+% structure mesh point i: 
+HfsNN = (Mf*HsfNN*inv(Ms))';
 
 %% RBF interpolation structure -> flow
 PHI = zeros(Ns);
@@ -92,12 +86,15 @@ P   = zeros(Ns,3);
 
 % IMPLEMENT HERE:
 % Define the polynomial matrix P = [1 x1 y1 ; 1 x2 y2 ; ... ]
+P(:, 1) = 1; % 1
+P(:, 2) = Xs(:,1); % x_i
+P(:, 2) = Xs(:,1); % y_i
 
 % IMPLEMENT HERE:
 % Define the RBF matrix PHI(i,j) = phi(|| x_i - x_j ||)
 for i=1:Ns
     for j=1:Ns
-
+        x_ij = Xs()
         PHI(i,j) = 
     
     end

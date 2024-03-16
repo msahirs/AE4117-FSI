@@ -86,14 +86,20 @@ P   = zeros(Ns,3);
 
 % IMPLEMENT HERE:
 % Define the polynomial matrix P = [1 x1 y1 ; 1 x2 y2 ; ... ]
+P(:, 1) = 1; % 1
+P(:, 2) = Xs(:,1); % x_i
+P(:, 2) = Xs(:,1); % y_i
 
 % IMPLEMENT HERE:
 % Define the RBF matrix PHI(i,j) = phi(|| x_i - x_j ||)
 for i=1:Ns
     for j=1:Ns
-
-        PHI(i,j) = 
-    
+        r = 1; % support radius
+        x_ij = sqrt((Xs(i, 1) - Xs(j, 1))^2 + (Xs(i, 2) - Xs(j, 2))^2);
+        if x_ij > r
+            PHI(i,j) = 0;
+        else
+            PHI(i,j) = (1-x_ij/r)^4*(4*x_ij/r+1);
     end
 end
 
