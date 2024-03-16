@@ -12,13 +12,13 @@ k = 1
 
 # Time step size and number of time steps
 dt    = 0.1
-Ndt   = 1000
+Ndt   = 100
 
 # Integration method:
 #   theta = 0   : first order explicit Euler
 #   theta = 1/2 : second order trapezoidal rule
 #   theta = 1   : first order implicit Euler
-theta = 0.5
+theta = 1
 
 # spatial discretization:
 # 
@@ -143,7 +143,7 @@ for i in range(0,4):
     # else:
     #     plt.plot(tvec,lst[i][1],'--', dashes=(5, 3), label = 'mono') # plot entire time series
     plt.plot(tvec,lst[i][0], label = 'exact')
-    plt.plot(tvec,lst[i][1],'--', dashes=(5, 3), label = 'mono')
+    # plt.plot(tvec,lst[i][1],'--', dashes=(5, 3), label = 'mono')
     plt.plot(tvec,lst[i][2],  label = 's->f')
     plt.plot(tvec,lst[i][3],'--',dashes=(5, 1), label = 'f->s')
     plt.plot(tvec,lst[i][4], '--', dashes=(5, 5), label = 'parallel')
