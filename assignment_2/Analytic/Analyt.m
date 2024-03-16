@@ -157,14 +157,21 @@ P   = zeros(Nf,3);
 
 % IMPLEMENT HERE:
 % Define the polynomial matrix P = [1 x1 y1 ; 1 x2 y2 ; ... ]
+P(:, 1) = 1; % 1
+P(:, 2) = Xf(:,1); % x_i
+P(:, 3) = Xf(:,2); % y_i
 
 % IMPLEMENT HERE:
 % Define the RBF matrix PHI(i,j) = phi(|| x_i - x_j ||)
 for i=1:Nf
     for j=1:Nf
-
-        PHI(i,j) = 
-    
+        r = 1; % support radius
+        x_ij = sqrt((Xf(i, 1) - Xf(j, 1))^2 + (Xf(i, 2) - Xf(j, 2))^2);
+        if x_ij > r
+            PHI(i,j) = 0;
+        else
+            PHI(i,j) = (1-x_ij/r)^4*(4*x_ij/r+1);
+        end
     end
 end
 
@@ -181,6 +188,9 @@ P   = zeros(Ns,3);
 
 % PHI is the RBF matrix
 % P is the matrix for the linear polynomial
+P(:, 1) = 1; % 1
+P(:, 2) = Xs(:,1); % x_i
+P(:, 3) = Xs(:,2); % y_i
 
 % IMPLEMENT HERE:
 % Define the polynomial matrix P = [1 x1 y1 ; 1 x2 y2 ; ... ]
@@ -189,9 +199,13 @@ P   = zeros(Ns,3);
 % Define the RBF matrix PHI(i,j) = phi(|| x_i - x_j ||)
 for i=1:Ns
     for j=1:Nf
-
-        PHI(i,j) = 
-        
+        r = 1; % support radius
+        x_ij = sqrt((Xs(i, 1) - Xf(j, 1))^2 + (Xs(i, 2) - Xf(j, 2))^2);
+        if x_ij > r
+            PHI(i,j) = 0;
+        else
+            PHI(i,j) = (1-x_ij/r)^4*(4*x_ij/r+1);
+        end
     end
 end
 
