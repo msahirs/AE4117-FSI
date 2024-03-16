@@ -31,8 +31,6 @@ function nodesNew = movemesh(nodes,disp)
         
         % Set up RBF interpolation matrix for constraints
         rbfMat = zeros(Nb+3);
-        Mb = zeros(Nb);
-        P   = zeros(Nb,3);
 
         %% IMPLEMENT YOUR RBF MESH DEFORMATION HERE
         
@@ -47,29 +45,41 @@ function nodesNew = movemesh(nodes,disp)
         for i = 1:Nb
             for j = 1:Nb
                 distance = sqrt((Xb(j,1) - Xb(i,1))^2 + (Xb(j,2) - Xb(i,2))^2);
-                Mb(i,j) = distance^2*log(distance);
+                rbfMat(i,j) = distance^2*ln(distance);
             end
         end
         P(:, 1) = 1; % 1
         P(:, 2) = Xb(:,1); % x_b
         P(:, 3) = Xb(:,2); % y_b
 
-        rbfMat = [Mb P ; P' zeros(3)];
+        C = [rbfMat P ; P' zeros(3)];
 
-        Mb = zeros(Ni,Nb);
+        rbfMat = zeros(Ni,Nb);
         P   = zeros(Ni,3);
-
         P(:, 1) = 1; % 1
         P(:, 2) = Xi(:,1); % x_i
         P(:, 3) = Xi(:,2); % y_i
 
-        for i=1:Ni
-            for j=1:Nb
-                distance = sqrt((Xi(i, 1) - Xb(j, 1))^2 + (Xi(i, 2) - Xb(j, 2))^2);
-                Mb(i,j) = distance^2*log(distance);
-            end
+for i=1:Nf
+    for j=1:Ns
+        r = 1; % support radius
+        x_ij = sqrt((Xf(i, 1) - Xs(j, 1))^2 + (Xf(i, 2) - Xs(j, 2))^2);
+        if x_ij > r
+            PHI(i,j) = 0;
+        else
+            PHI(i,j) = (1-x_ij/r)^4*(4*x_ij/r+1);
         end
+    end
+end
 
+
+
+
+
+
+
+
+        
         for i=1:Ni
             disp(ID(i),2:3) = Di(i,:);
         end
