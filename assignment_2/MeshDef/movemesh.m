@@ -31,8 +31,6 @@ function nodesNew = movemesh(nodes,disp)
         
         % Set up RBF interpolation matrix for constraints
         rbfMat = zeros(Nb+3);
-        Mb = zeros(Nb);
-        P   = zeros(Nb,3);
 
         %% IMPLEMENT YOUR RBF MESH DEFORMATION HERE
         
@@ -44,31 +42,18 @@ function nodesNew = movemesh(nodes,disp)
         % determine rbf coefficients 
         % evaluate RBF function for each internal node
         % Convert internal displacements to global disp vector
+
         for i = 1:Nb
             for j = 1:Nb
                 distance = sqrt((Xb(j,1) - Xb(i,1))^2 + (Xb(j,2) - Xb(i,2))^2);
-                Mb(i,j) = distance^2*log(distance);
+                rbfMat(i,j) = distance^2*log(distance);
             end
         end
-        P(:, 1) = 1; % 1
-        P(:, 2) = Xb(:,1); % x_b
-        P(:, 3) = Xb(:,2); % y_b
-
-        rbfMat = [Mb P ; P' zeros(3)];
-
-        Mb = zeros(Ni,Nb);
-        P   = zeros(Ni,3);
-
-        P(:, 1) = 1; % 1
-        P(:, 2) = Xi(:,1); % x_i
-        P(:, 3) = Xi(:,2); % y_i
-
-        for i=1:Ni
-            for j=1:Nb
-                distance = sqrt((Xi(i, 1) - Xb(j, 1))^2 + (Xi(i, 2) - Xb(j, 2))^2);
-                Mb(i,j) = distance^2*log(distance);
-            end
-        end
+        P = [ones(Nb, 1), Xb(:,1), Xb(:,2)];
+        rbfMat(Nb+1:Nb+3, 1:Nb) = P';
+        rbfMat(1:Nb, Nb+1:Nb+3) = P;
+        constraints = [Db(:,1); Db(:,2)];
+        rbfCoeff = rbfMat \ constraints;        
 
         for i=1:Ni
             disp(ID(i),2:3) = Di(i,:);
