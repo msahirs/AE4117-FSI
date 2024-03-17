@@ -45,16 +45,30 @@ function nodesNew = movemesh(nodes,disp)
 
         for i = 1:Nb
             for j = 1:Nb
-                distance = sqrt((Xb(j,1) - Xb(i,1))^2 + (Xb(j,2) - Xb(i,2))^2);
+                distance = sqrt((Xb(i,1) - Xb(j,1))^2 + (Xb(i,2) - Xb(j,2))^2);
                 rbfMat(i,j) = distance^2*log(distance);
             end
         end
+
         P = [ones(Nb, 1), Xb(:,1), Xb(:,2)];
         rbfMat(Nb+1:Nb+3, 1:Nb) = P';
         rbfMat(1:Nb, Nb+1:Nb+3) = P;
-        constraints = [Db(:,1); Db(:,2)];
-        rbfCoeff = rbfMat \ constraints;        
 
+        PHI = zeros(Ni, Nb);
+        P = [ones(Ni, 1), Xi(:,1), Xi(:,2)];
+
+        % evaluate RBF function for each internal node
+        for i = 1:Ni
+            for j = 1:Nb
+                distance = sqrt((Xi(i,1) - Xb(j,1))^2 + (Xi(i,2) - Xb(j,2))^2);
+                PHI(i,j) = distance^2*log(distance);
+            end
+        end
+
+        HbiRBF = [PHI P]/rbfMat;
+        HbiRBF = HbiRBF(:,1:Nb);
+        
+        % Convert internal displacements to global disp vector
         for i=1:Ni
             disp(ID(i),2:3) = Di(i,:);
         end
