@@ -46,7 +46,11 @@ function nodesNew = movemesh(nodes,disp)
         for i = 1:Nb
             for j = 1:Nb
                 distance = sqrt((Xb(i,1) - Xb(j,1))^2 + (Xb(i,2) - Xb(j,2))^2);
-                rbfMat(i,j) = distance^2 * log(distance);
+                if distance == 0
+                    rbfMat(i,j) = 0;
+                else
+                    rbfMat(i,j) = distance^2 * log(distance);
+                end
             end
         end
 
@@ -61,7 +65,11 @@ function nodesNew = movemesh(nodes,disp)
         for i = 1:Ni
             for j = 1:Nb
                 distance = sqrt((Xi(i,1) - Xb(j,1))^2 + (Xi(i,2) - Xb(j,2))^2);
-                Di(i,:) = Di(i,:) + rbfCoeff(j) * distance^2 * log(distance);
+                if distance == 0
+                    Di(i,:) = Di(i,:) + rbfCoeff(j, :) * 0;
+                else
+                    Di(i,:) = Di(i,:) + rbfCoeff(j) * distance^2 * log(distance);
+                end
             end
         end
 

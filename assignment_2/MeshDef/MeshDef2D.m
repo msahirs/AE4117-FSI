@@ -6,7 +6,7 @@ close all;
 NdtP = 20; % number of steps per period
 Np   = 0.25;  % number of periods to compute
 
-plotsol = 1;    % (=1) plot mesh quality every time step
+plotsol = 0;    % (=1) plot mesh quality every time step
 fmt     = '-b'; % linetype for plotting mesh quality in time
 
 N = 11;  % Number of cells in y
@@ -14,7 +14,7 @@ M = 11;  % Number of cells in x
 
 absdisp = 1; % (=1) absolute mesh deformation displacements
 
-maxAngle = 45;  % Maximum rotation angle (degrees)
+maxAngle = 30;  % Maximum rotation angle (degrees)
 
 
 %% Standard settings
