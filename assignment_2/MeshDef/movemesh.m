@@ -42,37 +42,42 @@ function nodesNew = movemesh(nodes,disp)
         % determine rbf coefficients 
         % evaluate RBF function for each internal node
         % Convert internal displacements to global disp vector
+        Mb = zeros(Nb, Nb);
+        P = zeros(Nb,3);
+        P = [ones(Nb, 1), Xb(:,1), Xb(:,2)];
 
         for i = 1:Nb
             for j = 1:Nb
                 distance = sqrt((Xb(i,1) - Xb(j,1))^2 + (Xb(i,2) - Xb(j,2))^2);
                 if distance == 0
-                    rbfMat(i,j) = 0;
+                    Mb(i,j) = 0;
                 else
-                    rbfMat(i,j) = distance^2 * log(distance);
+                    Mb(i,j) = distance^2 * log(distance);
                 end
             end
         end
+        
+        rbfMat = [Mb P ; P' zeros(3)];
 
-        P = [ones(Nb, 1), Xb(:,1), Xb(:,2)];
-        rbfMat(Nb+1:Nb+3, 1:Nb) = P';
-        rbfMat(1:Nb, Nb+1:Nb+3) = P;
-
-        constraints = [Db(:,1), Db(:,2); zeros(3, 2)];
-        rbfCoeff = rbfMat \ constraints;
+        Mb = zeros(Ni, Nb);
+        P = zeros(Ni, 3);
+        P = [ones(Ni, 1), Xi(:,1), Xi(:,2)];
 
         % evaluate RBF function for each internal node
         for i = 1:Ni
             for j = 1:Nb
                 distance = sqrt((Xi(i,1) - Xb(j,1))^2 + (Xi(i,2) - Xb(j,2))^2);
                 if distance == 0
-                    Di(i,:) = Di(i,:) + rbfCoeff(j, :) * 0;
+                    Mb(i,j) = 0;
                 else
-                    Di(i,:) = Di(i,:) + rbfCoeff(j) * distance^2 * log(distance);
+                    Mb(i,j) = distance^2 * log(distance);
                 end
             end
         end
-
+        
+        H = [Mb P]/rbfMat;
+        H = H(:, 1:Nb);
+        Di = H * Db;
         % Convert internal displacements to global disp vector
         for i=1:Ni
             disp(ID(i),2:3) = Di(i,:);
