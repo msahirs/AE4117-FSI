@@ -304,3 +304,22 @@ err_dW_NN     = abs( (Mf*Pf)' * Df_NN  -  (Ms*Ps_NN)' * Ds );
 err_dW_NN_cv  = abs( (Mf*Pf)' * Df_NN  -  (Ms*Ps_NN_cv)' * Ds ); % UNSURE if it should be (in that case, compute conservative disp. of fluid): err_dW_NN_cv  = abs( (Mf*Pf)' * Df_NN_cv  -  (Ms*Ps_NN_cv)' * Ds );
 err_dW_RBF    = abs( (Mf*Pf)' * Df_RBF  -  (Ms*Ps_RBF)' * Ds ); 
 err_dW_RBF_cv = abs( (Mf*Pf)' * Df_RBF  -  (Ms*Ps_RBF_cv)' * Ds ); % UNSURE if it should be (in that case, compute conservative disp. of fluid): err_dW_RBF_cv = abs( (Mf*Pf)' * Df_RBF_cv  -  (Ms*Ps_RBF_cv)' * Ds ); 
+
+
+plotRowSums(HsfRBF);
+plotRowSums(HfsRBF);
+
+%% Plot Row-sum
+function plotRowSums(matrix)
+    % Calculate row sums
+    rowSums = sum(matrix, 2);
+    
+    % Plot row sums
+    figure;
+    plot(rowSums);
+    
+    % Add labels and title
+    xlabel('Row Index');
+    ylabel('Row Sum');
+    title('Row Sums Plot');
+end
