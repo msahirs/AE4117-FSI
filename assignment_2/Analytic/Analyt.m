@@ -2,7 +2,7 @@
 
 % Check if number of structure points already defined
 if ( ~exist('Ns','var') )
-    Ns    = 71;
+    Ns    = 51;
 end
 
 % Check if number of fluid points already defined
