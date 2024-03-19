@@ -12,7 +12,7 @@ fmt     = '-m'; % linetype for plotting mesh quality in time
 N = 11;  % Number of cells in y
 M = 11;  % Number of cells in x
 
-absdisp = 0; % (=1) absolute mesh deformation displacements
+absdisp = 1; % (=1) absolute mesh deformation displacements
 
 maxAngle = 90;  % Maximum rotation angle (degrees)
 
@@ -21,9 +21,13 @@ maxAngle = 90;  % Maximum rotation angle (degrees)
 Lx = 1; % Length of domain in x
 Ly = 1; % Length of domain in y
 
+radius = [0.01, 0.1, 0.5, 1, 5, 10];
+min_qual_mesh = [];
 %% Initialization
-
 % Compute node location
+for i = 1:length(radius)
+    r = radius(i);
+
 nodes = zeros((N+1)*(M+1),2);
 for x=0:M
     nodes(x*(N+1)+1:(x+1)*(N+1),1) = x/M*Lx;
@@ -81,14 +85,13 @@ for iTimeStep=1:NdtP*Np
         displacements(nodeID,:) = [1 0 0];
     end
     if (absdisp)
-        nodes   = movemesh(nodes0,displacements);
+        nodes   = movemesh_bonus(nodes0,displacements,r);
     else
-        nodes   = movemesh(nodes,displacements);
+        nodes   = movemesh_bonus(nodes,displacements,r);
     end
     
     % determine error compared to uniform flow
     qualOfMesh(iTimeStep+1) = min(plotMesh(cells,nodes));
-
     if (plotsol)
         close(1);
         figure(1);
@@ -96,27 +99,36 @@ for iTimeStep=1:NdtP*Np
         figure(1);
 %        pause
     end
-
-    
-    
+end
+min_qual_mesh = [min_qual_mesh min(qualOfMesh)];
 end
 
 %% plot results
 
-figure(2);
-hold on;
-title('Mesh Quality');
-ylabel('min orthogonality');
-xlabel('time');
-plot((0:NdtP*Np)*dt,qualOfMesh,fmt);
-% saveas(gcf, 'mesh_othog_23_8.png')
-
 figure(1);
 close(1);
 figure(1);
-title('Mesh quality (orthogonality)');
-xlabel('x');
-ylabel('y');
+title('Minimum mesh quality');
+xlabel('r');
+ylabel('min fss');
 colorbar;
-plotMesh(cells,nodes);
-% saveas(gcf, 'mesh_quality_23_8.png')
+plot(radius,min_qual_mesh);
+saveas(gcf, 'min_orthog_absolute.png')
+
+% figure(2);
+% hold on;
+% title('Mesh Quality');
+% ylabel('min orthogonality');
+% xlabel('time');
+% plot((0:NdtP*Np)*dt,qualOfMesh,fmt);
+% % saveas(gcf, 'mesh_othog_23_8.png')
+% 
+% figure(1);
+% close(1);
+% figure(1);
+% title('Mesh quality (orthogonality)');
+% xlabel('x');
+% ylabel('y');
+% colorbar;
+% plotMesh(cells,nodes);
+% % saveas(gcf, 'mesh_quality_23_8.png')
