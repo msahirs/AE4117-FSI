@@ -12,7 +12,7 @@ fmt     = '-m'; % linetype for plotting mesh quality in time
 N = 11;  % Number of cells in y
 M = 11;  % Number of cells in x
 
-absdisp = 1; % (=1) absolute mesh deformation displacements
+absdisp = 0; % (=1) absolute mesh deformation displacements
 
 maxAngle = 90;  % Maximum rotation angle (degrees)
 
@@ -113,7 +113,7 @@ xlabel('r');
 ylabel('min fss');
 colorbar;
 plot(radius,min_qual_mesh);
-saveas(gcf, 'min_orthog_absolute.png')
+saveas(fig,'min_orthog_absolute.png')
 
 % figure(2);
 % hold on;
