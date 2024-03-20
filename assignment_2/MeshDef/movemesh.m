@@ -1,4 +1,4 @@
-function nodesNew = movemesh(nodes,disp)
+    function nodesNew = movemesh(nodes,disp)
     
     Nb = sum(disp(:,1));       % boundary points (constraints)
     Ni = length(disp(:,1))-Nb; % internal points
