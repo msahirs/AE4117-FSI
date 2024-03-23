@@ -1,16 +1,29 @@
+close all
+clear all
 %% Input data
 N  = 20;        % number of cells
 
 dt   = 0.1;     % time step
 tend = 10;      % total simulation time
 
-fmt = 'b-';     % linecolor for plot of final solution
+fmt = '-b';     % linecolor for plot of final solution
 
 show_sol = 1;   % (=1) show intermediate solutions during simulation
 
 method = 1;     % method = 1 : exact at t(n+1)
                 % method = 2 : exact at t(n+1/2)
                 % method = 3 : DGCL
+
+dt_values = [0.1, 0.05, 0.025];
+for dt = dt_values
+  if dt==0.1
+    fmt = '-b';
+  elseif dt==0.05
+    fmt = '-r';
+  else
+    fmt = '-g';
+  end
+
 if (method == 1)
   disp('Mesh velocities are EXACT at t(n+1)');
 elseif (method == 2)
@@ -104,3 +117,11 @@ title(['Solution at t=' num2str(tend)]);
 ylabel('Solution');
 xlabel('x');
 plot(x,u,fmt);
+legend(['dt=0.1'], ['dt=0.05'], ['dt=0.025']);
+
+
+end
+
+
+saveas(figure(2), 'method_1_q21.png');
+hold off;
