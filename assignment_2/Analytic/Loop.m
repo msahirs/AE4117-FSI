@@ -17,7 +17,7 @@ for iref=1:8
     % Determine the number of structure ans fluid mesh points (multiply by
     % 2 for every new refinement level)
     Ns = 5*2^(iref-1)+1;
-    Nf = 7*2^(iref-1)+1;
+    Nf = 5*2^(iref-1)+1;
     
     Analyt;
     

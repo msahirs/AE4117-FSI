@@ -301,13 +301,16 @@ err_Ps_RBF_cv = norm(interp1(Xs(:,1),Ps_RBF_cv,Xi,'linear')-Df_ex)/sqrt(Nfine);
 % Compute the work on the interface on the fluid side and the structure
 % side and store the error in the conservation of work over the interface
 err_dW_NN     = abs( (Mf*Pf)' * Df_NN  -  (Ms*Ps_NN)' * Ds );
-err_dW_NN_cv  = abs( (Mf*Pf)' * Df_NN  -  (Ms*Ps_NN_cv)' * Ds ); % UNSURE if it should be (in that case, compute conservative disp. of fluid): err_dW_NN_cv  = abs( (Mf*Pf)' * Df_NN_cv  -  (Ms*Ps_NN_cv)' * Ds );
+err_dW_NN_cv  = abs( (Mf*Pf)' * Df_NN  -  (Ms*Ps_NN_cv)' * Ds ); 
 err_dW_RBF    = abs( (Mf*Pf)' * Df_RBF  -  (Ms*Ps_RBF)' * Ds ); 
 err_dW_RBF_cv = abs( (Mf*Pf)' * Df_RBF  -  (Ms*Ps_RBF_cv)' * Ds ); % UNSURE if it should be (in that case, compute conservative disp. of fluid): err_dW_RBF_cv = abs( (Mf*Pf)' * Df_RBF_cv  -  (Ms*Ps_RBF_cv)' * Ds ); 
 
 
-plotRowSums(HsfRBF);
-plotRowSums(HfsRBF);
+%plotRowSums(HsfNN);
+%plotRowSums(HfsRBF);
+
+%heatmap(HsfNN);
+%heatmap(HsfRBF);
 
 %% Plot Row-sum
 function plotRowSums(matrix)
