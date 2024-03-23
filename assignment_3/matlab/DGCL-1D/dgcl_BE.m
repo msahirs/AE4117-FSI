@@ -123,5 +123,5 @@ legend(['dt=0.1'], ['dt=0.05'], ['dt=0.025']);
 end
 
 
-saveas(figure(2), 'method_3_q21.png');
+% saveas(figure(2), 'method_3_q21.png');
 hold off;

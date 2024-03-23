@@ -1,4 +1,5 @@
 clear all;
+close all;
 
 %% Setup
 
@@ -154,8 +155,6 @@ for iTimeStep=1:NdtP*Np
 %        pause
     end
 
-    
-    
 end
 
 %% plot results

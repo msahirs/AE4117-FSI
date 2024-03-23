@@ -3,7 +3,7 @@ function meshVelocity = compute_meshVelocity(mesh,nodes,nodesTN,dt)
     
     % NOTE: Vectors are stored in row!
     
-    if (1) % violate DGCL
+    if (0) % violate DGCL
         % Base mesh velocities on displacement of face centers
         for IDcell=1:N
             cell    = mesh(IDcell,:);                   % cell definition
@@ -24,9 +24,15 @@ function meshVelocity = compute_meshVelocity(mesh,nodes,nodesTN,dt)
             c_TNP1  = compute_facecenter(cell,nodes);   % face centers at t_n+1
             Sn_TNP1 = compute_faceSn(cell,nodes);       % face surfaces*normal at t_n+1
             for IDface=1:4
-
                 %% IMPLEMENT THE DGCL HERE %%
-            
+            sweptVolume = (c_TNP1(IDface,:)-c_TN(IDface,:)) .* (Sn_TNP1(IDface,:)-Sn_TN(IDface,:));
+            if sweptVolume(1) == 0 && sweptVolume(2) == 0
+                velocity = [0,0];
+            else
+                velocity = (sweptVolume)./((Sn_TNP1(IDface,:) - Sn_TN(IDface,:))*dt);
+            disp(velocity) ;
+            meshVelocity(IDcell,IDface,1) = velocity(1);
+            meshVelocity(IDcell,IDface,2) = velocity(2);
             end
         end
     end
