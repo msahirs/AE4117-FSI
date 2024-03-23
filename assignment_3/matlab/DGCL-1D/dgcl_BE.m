@@ -10,7 +10,7 @@ fmt = '-b';     % linecolor for plot of final solution
 
 show_sol = 1;   % (=1) show intermediate solutions during simulation
 
-method = 1;     % method = 1 : exact at t(n+1)
+method = 3;     % method = 1 : exact at t(n+1)
                 % method = 2 : exact at t(n+1/2)
                 % method = 3 : DGCL
 
@@ -123,5 +123,5 @@ legend(['dt=0.1'], ['dt=0.05'], ['dt=0.025']);
 end
 
 
-saveas(figure(2), 'method_1_q21.png');
+saveas(figure(2), 'method_3_q21.png');
 hold off;
