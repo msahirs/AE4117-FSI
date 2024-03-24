@@ -2,7 +2,7 @@
 N  = 20;        % number of cells
 
 dt   = 0.1;     % time step
-tend = 10;      % total simulation time
+tend = 100;      % total simulation time
 
 fmt = 'b-';     % linecolor for plot of final solution
 
@@ -108,7 +108,7 @@ for t=dt:dt:tend
   xi_tnm1 = xi_tn;
   
   % After first time step we can use 
-  alpha= alpha_BDF;
+  alpha= alpha_BE;
   
   % Show intermediate solution
   if (show_sol)
