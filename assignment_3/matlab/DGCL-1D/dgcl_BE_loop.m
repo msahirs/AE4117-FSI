@@ -99,9 +99,9 @@ for method = 1:1:3
 
         end
         %% Error Computation
-        e1 = sqrt(e1)/N;
+        e1 = sqrt(e1/N);
         M = round(tend/dt);
-        e2 = sqrt(e2)/(N*M);
+        e2 = sqrt(e2/(N*M));
     
         e1_arr(k, method) = e1;
         e2_arr(k, method) = e2;
@@ -129,3 +129,13 @@ loglog(dt_arr, e2_arr(:,3), 'g-x'); % method 3
 legend('Method 1: Mesh velocities are EXACT at t(n+1)', 'Method 2: Mesh velocities are EXACT at t(n+1/2)','Method 3: Mesh velocities satisfy DGCL')
 xlabel('dt [s]')
 ylabel('Error 2: (RMS for entire simulation)')
+
+%% error analysis
+p_e1_method1 = polyfit(log(dt_arr), log(e1_arr(:,1)), 1);
+p_e1_method2 = polyfit(log(dt_arr), log(e1_arr(:,2)), 1);
+p_e2_method1 = polyfit(log(dt_arr), log(e2_arr(:,1)), 1);
+p_e2_method2 = polyfit(log(dt_arr), log(e2_arr(:,2)), 1);
+
+fprintf("\nMethod 1: Exact at tn+1:\nError1: %d\nError2: %d\n", p_e1_method1(1),p_e2_method1(1));
+fprintf("\nMethod 2: Exact at tn+1/2:\nError1: %d\nError2: %d\n", p_e1_method2(1),p_e2_method2(1));
+
