@@ -2,7 +2,7 @@
 N  = 20;        % number of cells
 
 dt   = 0.1;     % time step
-tend = 10;      % total simulation time
+tend = 100;      % total simulation time
 
 fmt = 'b-';     % linecolor for plot of final solution
 
@@ -48,10 +48,13 @@ hold off;
 
 L = zeros(N);   % Discretization matrix
 
+alpha_BE = [1 -1 0]; % Time discretization coefficients (first step Backward Euler)
+alpha_BDF = [1.5 -2 0.5]; % Time discretization coefficients (first step Backward Euler)
 alpha = [1 -1 0]; % Time discretization coefficients (first step Backward Euler)
 
 %% Simulation loop
 for t=dt:dt:tend
+
   dx_tn = dx;  % store cell volume at tn
   xi_tn = xi;  % store face center at tn
   u_tn  = u;   % store solution at tn
@@ -64,7 +67,7 @@ for t=dt:dt:tend
   dxidt_exnp1_2 = 2*pi*cos(2*pi*(t-dt/2))*sin(2*pi*xi0) / N;    % exact face velocity at tn+1/2
 
   %% IMPLEMENTATION OF DGCL
-  dxidt_dgcl    =                                               % face velocity satisfying D-GCL
+  dxidt_dgcl    = (alpha(1) * xi + alpha(2) * xi_tn + alpha(3) * xi_tnm1) / dt; % face velocity satisfying D-GCL
   %%
 
   if (method == 1)
@@ -105,7 +108,7 @@ for t=dt:dt:tend
   xi_tnm1 = xi_tn;
   
   % After first time step we can use 
-  alpha=[3/2 -2 1/2];
+  alpha= alpha_BE;
   
   % Show intermediate solution
   if (show_sol)
