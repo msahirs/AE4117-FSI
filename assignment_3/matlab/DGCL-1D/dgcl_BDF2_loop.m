@@ -146,7 +146,7 @@ loglog(dt_arr, e1_arr(:,1), 'b-x'); % method 1
 hold("on");
 loglog(dt_arr, e1_arr(:,2), 'r-x'); % method 2
 loglog(dt_arr, e1_arr(:,3), 'g-x'); % method 3
-legend('Method 1: Mesh velocities are EXACT at t(n+1)', 'Method 2: Mesh velocities are EXACT at t(n+1/2)','Method 3: Mesh velocities satisfy DGCL')
+legend('Method 1: Mesh velocities are EXACT at t(n+1)', 'Method 2: Mesh velocities are EXACT at t(n+1/2)','Method 3: Mesh velocities satisfy DGCL', 'Location', 'best')
 xlabel('dt [s]')
 ylabel('Error 1: (RMS at final time)')
 
@@ -157,7 +157,7 @@ loglog(dt_arr, e2_arr(:,1), 'b-x'); % method 1
 hold("on");
 loglog(dt_arr, e2_arr(:,2), 'r-x'); % method 2
 loglog(dt_arr, e2_arr(:,3), 'g-x'); % method 3
-legend('Method 1: Mesh velocities are EXACT at t(n+1)', 'Method 2: Mesh velocities are EXACT at t(n+1/2)','Method 3: Mesh velocities satisfy DGCL')
+legend('Method 1: Mesh velocities are EXACT at t(n+1)', 'Method 2: Mesh velocities are EXACT at t(n+1/2)','Method 3: Mesh velocities satisfy DGCL','Location', 'best')
 xlabel('dt [s]')
 ylabel('Error 2: (RMS for entire simulation)')
 
