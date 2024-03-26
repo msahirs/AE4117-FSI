@@ -2,19 +2,23 @@ close all
 clear all
 %% Input data
 N  = 20;        % number of cells
+dx = 1/N;
 
 dt   = 0.1;     % time step
 tend = 10;      % total simulation time
 
 fmt = '-b';     % linecolor for plot of final solution
 
-show_sol = 1;   % (=1) show intermediate solutions during simulation
+show_sol = 0;   % (=1) show intermediate solutions during simulation
 
-method = 3;     % method = 1 : exact at t(n+1)
+method = 1;     % method = 1 : exact at t(n+1)
                 % method = 2 : exact at t(n+1/2)
                 % method = 3 : DGCL
-
 dt_values = [0.1, 0.05, 0.025];
+
+% amplitudes = zeros(length(dt_values), 1); % amplitudes, computed roughly at t = 0.25 
+amplitudes = [];
+loop_count = 0;
 for dt = dt_values
   if dt==0.1
     fmt = '-b';
@@ -99,6 +103,14 @@ for t=dt:dt:tend
   % solve system
   u = (L\(dx_tn.*u_tn)')';
 
+  % store amplitude at x = 0.25, only at final solution (t = tend)
+  if (t > tend- 0.01*dt) 
+      u_min = min(u);
+      % amplitudes(loop_count,1) = 1-u_min;
+      amplitudes = [amplitudes, 1-u_min];
+  end
+
+
   % Show intermediate solution
   if (show_sol)
     figure(1);
@@ -110,6 +122,7 @@ for t=dt:dt:tend
   
 end
 
+
 %% Plot final solution
 figure(2);
 hold on;
@@ -118,10 +131,17 @@ ylabel('Solution');
 xlabel('x');
 plot(x,u,fmt);
 legend(['dt=0.1'], ['dt=0.05'], ['dt=0.025']);
-
-
+loop_count = loop_count + 1;
 end
+
+% rough order of accuracy
+% p = mean((amplitudes[:-1] - amplitudes[1:])/(dt_values[:-1] - dt_values[1:]));
+p = (amplitudes(1:end-1) - amplitudes(2:end)) ./ (dt_values(1:end-1) - dt_values(2:end));
+p_mean = mean(p);
+log_base_2_p = log(p_mean) / log(0.5);
 
 
 % saveas(figure(2), 'method_3_q21.png');
 hold off;
+
+
