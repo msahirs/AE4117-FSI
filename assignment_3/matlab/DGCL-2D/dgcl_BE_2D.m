@@ -3,8 +3,8 @@ close all;
 
 %% Setup
 
-NdtP = 10; % number of steps per period
-Np   = 2;  % number of periods to compute
+NdtP = 50; % number of steps per period
+Np   = 10;  % number of periods to compute
 
 plotsol = 1;    % (=1) plot solution every time step
 fmt     = '-b'; % linetype for plotting error in uniform solution
@@ -39,7 +39,9 @@ solution = ones(N*M,1);
 
 % Show initial solution
 figure(1);
+hold off
 plotSolution(cells,nodes,solution);
+hold off
 
 % Mesh dynamics
 omega = 2*pi;        % radial angular frequency
@@ -148,10 +150,13 @@ for iTimeStep=1:NdtP*Np
     errInSol(iTimeStep+1) = max(abs(solution-1));
 
     if (plotsol)
+
         close(1);
         figure(1);
         plotSolution(cells,nodes,solution);
         figure(1);
+        % % clf
+        % refresh
 %        pause
     end
 

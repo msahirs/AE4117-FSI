@@ -29,10 +29,10 @@ function meshVelocity = compute_meshVelocity(mesh,nodes,nodesTN,dt)
                 %% IMPLEMENT THE DGCL HERE %%
                 
                 h_diff = c_TNP1(IDface,:) - c_TN(IDface,:);
-                surf_avg = (Sn_TNP1(IDface,:) + Sn_TN(IDface,:))/2
+                surf_avg = (Sn_TNP1(IDface,:) + Sn_TN(IDface,:))/2;
                 % sweptVolume_dt = (h_diff.*surf_avg)/dt;  % element wise
                 sweptVolume_dt = dot(h_diff,surf_avg)/dt;  % dot product
-                velocity = sweptVolume_dt ./ ((Sn_TNP1(IDface,:) + Sn_TN(IDface,:))/2) ;
+                velocity = sweptVolume_dt ./ Sn_TNP1(IDface,:) ;
                 % velocity = (sweptVolume) ./ ((Sn_TNP1(IDface,:) - Sn_TN(IDface,:))*dt);
                 
                 if  (isnan(velocity(1)) || isinf(velocity(1)))
@@ -41,7 +41,7 @@ function meshVelocity = compute_meshVelocity(mesh,nodes,nodesTN,dt)
                 if (isnan(velocity(2)) || isinf(velocity(2)))
                     velocity(2) = 0;
                 end
-                velocity;
+            
                 meshVelocity(IDcell,IDface,1) = velocity(1);
                 meshVelocity(IDcell,IDface,2) = velocity(2);
             end
