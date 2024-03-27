@@ -8,7 +8,7 @@ fmt = 'b-';     % linecolor for plot of final solution
 
 show_sol = 1;   % (=1) show intermediate solutions during simulation
 
-method = 1;     % method = 1 : exact at t(n+1)
+method = 3;     % method = 1 : exact at t(n+1)
                 % method = 2 : exact at t(n+1/2)
                 % method = 3 : DGCL
 if (method == 1)
@@ -50,7 +50,7 @@ L = zeros(N);   % Discretization matrix
 
 alpha_BE = [1 -1 0]; % Time discretization coefficients (first step Backward Euler)
 alpha_BDF = [1.5 -2 0.5]; % Time discretization coefficients (first step Backward Euler)
-alpha = [1 -1 0]; % Time discretization coefficients (first step Backward Euler)
+alpha = alpha_BE; %[1 -1 0]; % Time discretization coefficients (first step Backward Euler)
 
 %% Simulation loop
 for t=dt:dt:tend
@@ -108,16 +108,16 @@ for t=dt:dt:tend
   xi_tnm1 = xi_tn;
   
   % After first time step we can use 
-  alpha= alpha_BE;
+  alpha= alpha_BDF;
   
   % Show intermediate solution
-  if (show_sol)
-    figure(1);
-    hold off;
-    plot(x,u,'-x');
-    axis([0 1 0.8 1.2]);
-%    pause
-  end
+%   if (show_sol)
+%     figure(1);
+%     hold off;
+%     plot(x,u,'-x');
+%     axis([0 1 0.8 1.2]);
+% %    pause
+%   end
   
 end
 

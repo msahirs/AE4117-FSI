@@ -105,7 +105,7 @@ for method = 1:1:3
           xi_tnm1 = xi_tn;
           
           % After first time step we can use 
-          alpha= alpha_BDF;
+          alpha= alpha_BE;
         
           % error 1 computation
           if abs(t-tend) < 0.01*dt
