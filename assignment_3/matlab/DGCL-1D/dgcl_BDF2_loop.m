@@ -50,7 +50,7 @@ for method = 1:1:3
         dx  = xi(2:N+1) - xi(1:N);  % cell volumes
 
         L = zeros(N);   % Discretization matrix
-        alpha = [1 -1 0]; % Time discretization coefficients (first step Backward Euler)
+        alpha = alpha_BE; % [1 -1 0]; % Time discretization coefficients (first step Backward Euler)
         %% Simulation loop
         for t=dt:dt:tend
           dx_tn = dx;  % store cell volume at tn
@@ -105,7 +105,7 @@ for method = 1:1:3
           xi_tnm1 = xi_tn;
           
           % After first time step we can use 
-          alpha= alpha;
+          alpha= alpha_BDF;
         
           % error 1 computation
           if abs(t-tend) < 0.01*dt

@@ -136,8 +136,9 @@ end
 
 % rough order of accuracy
 % p = mean((amplitudes[:-1] - amplitudes[1:])/(dt_values[:-1] - dt_values[1:]));
-p = (amplitudes(1:end-1) - amplitudes(2:end)) ./ (dt_values(1:end-1) - dt_values(2:end));
+p = (amplitudes(1:end-1)/amplitudes(2:end)) ./ (dt_values(1:end-1)/dt_values(2:end));
 p_mean = mean(p);
+fprintf('Estimated Order of convergence = %d\n', p_mean);
 log_base_2_p = log(p_mean) / log(0.5);
 
 
